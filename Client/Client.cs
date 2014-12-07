@@ -45,12 +45,11 @@ namespace Client
             {
                 try
                 {
-                    Console.Write(" > ");
                     string input = Console.ReadLine();
 
                     Packet p = new Packet(id, PacketType.Chat);
-                    p.generalData.Add(name);
-                    p.generalData.Add(input);
+                    p.data.Add(name);
+                    p.data.Add(input);
                     masterSocket.Send(p.ToBytes());
                 }
                 catch (SocketException ex)
@@ -68,12 +67,21 @@ namespace Client
 
             while (true)
             {
-                buffer = new byte[masterSocket.SendBufferSize];
-                readBytes = masterSocket.Receive(buffer);
-
-                if (readBytes > 0)
+                try
                 {
-                    DataManager(new Packet(buffer));
+                    buffer = new byte[masterSocket.SendBufferSize];
+                    readBytes = masterSocket.Receive(buffer);
+
+                    if (readBytes > 0)
+                    {
+                        DataManager(new Packet(buffer));
+                    }
+                }
+                catch (SocketException ex)
+                {
+                    Console.WriteLine("The server has disconnected!");
+                    Console.ReadLine();
+                    Environment.Exit(1);
                 }
             }
         }
@@ -83,17 +91,17 @@ namespace Client
             switch(p.type)
             {
                 case PacketType.Registration:
-                   id = p.generalData[0];
-                break;
+                    id = p.data[0];
+                    break;
                 
                 case PacketType.Chat:
-                ConsoleColor c = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Cyan;
+                    ConsoleColor c = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
 
-                Console.WriteLine(p.generalData[0] + ": " + p.generalData[1]);
+                    Console.WriteLine(p.data[0] + ": " + p.data[1]);
 
-                Console.ForegroundColor = c;
-                break;
+                    Console.ForegroundColor = c;
+                    break;
             }
         }
     }

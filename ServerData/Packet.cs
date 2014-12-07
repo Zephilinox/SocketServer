@@ -12,15 +12,13 @@ namespace ServerData
     [Serializable]
     public class Packet
     {
-        public List<string> generalData;
-        public int integer;
-        public bool boolean;
+        public List<string> data;
         public string senderID;
         public PacketType type;
 
         public Packet(string sID, PacketType t)
         {
-            generalData = new List<string>();
+            data = new List<string>();
             senderID = sID;
             type = t;
         }
@@ -33,9 +31,7 @@ namespace ServerData
             Packet p = (Packet)bf.Deserialize(ms);
             ms.Close();
 
-            generalData = p.generalData;
-            integer = p.integer;
-            boolean = p.boolean;
+            data = p.data;
             senderID = p.senderID;
             type = p.type;
         }

@@ -71,13 +71,15 @@ namespace Server
                 case PacketType.Chat:
                     foreach(ClientData c in clients)
                     {
-                        c.clientSocket.Send(p.ToBytes());
+                        if (c.id != p.senderID)
+                        {
+                            c.clientSocket.Send(p.ToBytes());
+                        }
                     }
-                break;
+
+                    break;
             }
         }
-
-
     }
 
     class ClientData
@@ -110,9 +112,8 @@ namespace Server
         public void SendRegistrationPacket()
         {
             Packet p = new Packet("Server", PacketType.Registration);
-            p.generalData.Add(id);
+            p.data.Add(id);
             clientSocket.Send(p.ToBytes());
-
         }
     }
 }
